@@ -1,0 +1,98 @@
+
+name: Run Test
+on:
+  push:
+    paths-ignore:
+      - '**/*.md'
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  test:
+    name: Run Test
+    runs-on: ubuntu-18.04
+    if: >
+      (
+        github.event_name == 'push' &&
+        ! contains(github.event.commits[0].message, 'ci-skip')
+      ) || (
+        github.event_name == 'pull_request' &&
+        (
+          ! contains(github.event.pull_request.labels.*.name, 'skip-cov') &&
+          ! contains(github.event.pull_request.user.login, 'dependabot')
+        )
+      )
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2.3.4
+        with:
+          submodules: true
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Setup MySQL
+        run: |
+          sudo service mysql start
+          mysql --version
+          mysql -u root -proot -h localhost -e "CREATE DATABASE test_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Get poetry cache dir
+        id: poetry-cache
+        run: |
+          echo "::set-output name=dir::$(poetry config cache-dir)"
+      - name: Cache Poetry
+        uses: actions/cache@v2.1.4
+        id: cache
+        with:
+          path: ${{ steps.poetry-cache.outputs.dir }}
+          key: poetry-cache-v1-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            poetry-cache-v1-
+      - name: Install Requirements
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: poetry install --no-root
+      - name: Run Tests
+        id: test
+        run: poetry run task test-cov
+
+      # Since Codecov is not free for private repo with 5+ members,
+      # just track coverage in a simple way
+      - name: Report Coverage
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v3.1
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const { exec } = require('child_process')
+            exec('poetry run task cov-report', (error, stdout, stderr) => {
+              if (error) {
+                console.error(`exec error: ${error}`)
+                console.error(`stderr: ${stderr}`)
+                return
+              }
+              console.log(`stdout: ${stdout}`)
+              const coverage = stdout.match(/^TOTAL.*?(\d+%)$/m)[1]
+              const body = `<details>
+            <summary>
+            :tada: Test run passed! Total coverage is <b>${coverage}</b>
+            </summary>
+
+            \`\`\`
+            ${stdout}
+            \`\`\`
+            </details>
+            `
+              github.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body
+              })
+            })
+      - name: Lint Code
+        if: github.event_name == 'push'
+        run: poetry run flake8 bookB116

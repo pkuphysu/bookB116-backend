@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <style type="text/css" media="screen">
+p{
+  margin-left: 20px;
+  text-align: justify;
+}
+a{
+  text-decoration: none;
+}
+    </style>
+  </head>
+  <body>
+    <p style="margin-left:0px">常代会值班同学：</p>
+    {% if not data_tomorrow %}
+      <p>您好！明天（{{ tomorrow }}）主动学习实验室没有预约！辛苦了，好好轻松一下吧！</p>
+    {% else %}
+      <p>您好！明天（{{ tomorrow }}）的主动学习实验室预约情况如下：</p>
+      <ul>
+        {% for book_rec in data_tomorrow %}
+        <li style="margin-bottom:10px">
+        {{ book_rec.start_time.strftime('%H:%M') }} - {{ book_rec.end_time.strftime('%H:%M') }}
+          <ul>
+            <li>预约教室：{{ rooms[book_rec.room_id] }}</li>
+            <li>预约时间：{{ book_rec.date }}  {{ book_rec.start_time }} 至 {{ book_rec.end_time }}</li>
+            <li>发起人：{{ book_rec.sponsor }} ({{ book_rec.get_confirm_status()[0]['rawStudentId'] }})</li>
+            <li>联系方式：{{ book_rec.contact }}</li>
+            <li>参与人数：{{ book_rec.stu_num }}</li>
+            <li>用途：{{ book_rec.description }}</li>
+          </ul>
+        </li>
+        {% endfor %}
+      </ul>
+      <p>请在预约时间前5-10分钟到达主动学习实验室，为预约同学提供开门服务，并在预约时段结束后到达主动学习实验室锁门。感谢您对物理学院同学们的服务！</p>
+      <br>
+      <p>注：</p>
+      <ul>
+        <li>有特殊情况无法开门或教室被占用，请直接联系预约者学号邮箱。</li>
+        <li>预约已经过后台算法筛选，若算法筛选后仍存在不合理预约请求，请联系网络运营中心负责人（<a href="mailto:rev@pku.edu.cn">rev@pku.edu.cn</a>）</li>
+      </ul>
+    {% endif %}
+    <br>
+    <p>附接下来几天的预约情况：</p>
+    <ol>
+      {% for date, data_day in data_week.items() %}
+      {% for book_rec in data_day %}
+      <li style="margin-bottom:6px">
+        {{ date.month }}月{{ date.day }}日&nbsp;
+      {{ book_rec.start_time.strftime('%H:%M') }} - {{ book_rec.end_time.strftime('%H:%M') }}&nbsp;
+      预约教室：{{ rooms[book_rec.room_id] }}<br>
+      &emsp; 发起人：{{ book_rec.sponsor }} ({{ book_rec.get_confirm_status()[0]['rawStudentId'] }})<br>
+      &emsp; 联系方式：{{ book_rec.contact }}<br>
+      &emsp; 参与人数：{{ book_rec.stu_num }}<br>
+      &emsp; 用途：{{ book_rec.description }}<br>
+      </li>
+      {% endfor %}
+      {% endfor %}
+      </ol>
+    <br>
+    <p style="text-align: right">
+    物院学生会小助手<br>
+    {{ today }}</p>
+  </body>
+</html>

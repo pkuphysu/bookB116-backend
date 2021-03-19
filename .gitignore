@@ -1,0 +1,19 @@
+# coverage stuff
+.coverage
+coverage.xml
+cov.xml
+htmlcov/
+
+# VSCode
+.vscode/
+.DS_Store
+
+# Python stuff
+venv/
+__pycache__/
+
+# local config files
+/bookB116/settings/local.yaml
+
+# test log
+.test-log

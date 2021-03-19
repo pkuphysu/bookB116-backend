@@ -1,0 +1,26 @@
+FLASK:
+  SQLALCHEMY_DATABASE_URI: >
+    mysql+mysqlconnector://root:root@localhost/bookB116
+LOGGING:
+  version: 1
+  root:
+    level: INFO
+    handlers:
+      - wsgi
+      - file
+      - email
+  handlers:
+    email:
+      class: bookB116.utils.log.SSLSMTPHandler
+      level: ERROR
+      fromaddr: "Logging Bot"
+      toaddrs: # should in local.yaml
+      subject: Fatal Error From Our Server
+      formatter: default
+    file:
+      class: logging.handlers.TimedRotatingFileHandler
+      level: DEBUG
+      filename: /var/log/bookB116/flask/log
+      when: MIDNIGHT
+      backupCount: 60
+      formatter: default

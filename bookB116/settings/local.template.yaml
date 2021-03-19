@@ -1,0 +1,30 @@
+# Copy this template as `local.yaml` and
+# config your local settings
+common:
+  FLASK:
+    SECRET_KEY: 7onlVsgKlQKv85RLLTw6-g
+    FERNET_KEY: -erboeVHaNdELbBdfSvbWclGhq5_nBdCtHHXSIj_DhU=
+  EMAIL:
+    CREDENTIALS:
+      - hello@163.com
+      - world
+    SUMMARY:
+      RECEIVERS:
+        - whoareyou@pku.edu.cn
+production:
+  FLASK:
+    SQLALCHEMY_DATABASE_URI: >
+      mysql+mysqlconnector://user:password@localhost/PKU_PHY
+  LOGGING:
+    handlers:
+      email:
+        toaddrs:
+          - "Administrator <hereiam@pku.edu.cn>"
+development:
+  FLASK:
+    SQLALCHEMY_DATABASE_URI: >
+      mysql+mysqlconnector://user:password@localhost/PKU_PHY
+testing:
+  FLASK:
+    SQLALCHEMY_DATABASE_URI: >
+      mysql+mysqlconnector://user:password@localhost/test_db

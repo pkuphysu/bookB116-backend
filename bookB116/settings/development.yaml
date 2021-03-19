@@ -1,0 +1,5 @@
+FLASK:
+  SESSION_COOKIE_SAMESITE: None
+  SESSION_COOKIE_SECURE: True
+  SQLALCHEMY_DATABASE_URI: >
+    mysql+mysqlconnector://root:root@localhost/bookB116

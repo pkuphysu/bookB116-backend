@@ -1,0 +1,17 @@
+FLASK:
+  TESTING: True
+  SCRYPT_LEVEL: 6
+  SQLALCHEMY_DATABASE_URI: >
+    mysql+mysqlconnector://root:root@localhost/test_db
+LOGGING:
+  root:
+    level: DEBUG
+    handlers:
+      - wsgi
+      - test
+  handlers:
+    test:
+      class: logging.FileHandler
+      level: DEBUG
+      filename: .test-log
+      formatter: default

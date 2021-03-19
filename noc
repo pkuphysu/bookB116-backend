@@ -1,0 +1,91 @@
+#!/bin/bash -e
+
+noc_help() {
+cat << HELP
+PKU PHY SU NOC Helper Script
+b u: backend update      uWSGI will reload
+b r: backend reload      start if not running
+b s: backend stop
+b f: backend flask <command>
+b ?: backend running?
+f u: frontend update
+d u: dev backend update
+d r: dev backend reload
+d s: dev backend stop
+d f: dev backend flask <command>
+d ?: dev backend running?
+HELP
+exit
+}
+
+uwsgi_running() {
+    ps -p $(cat "$HOME/.pids/$UWSGI_NAME.pid") > /dev/null 2>&1
+}
+
+reload_uwsgi() {
+    if uwsgi_running; then
+        echo 'Reloading uWSGI.'
+        poetry run uwsgi --reload "$HOME/.pids/$UWSGI_NAME.pid"
+    else
+        poetry run uwsgi --ini uwsgi.ini
+    fi
+}
+
+if [[ $# -lt 2 ]]; then
+    noc_help
+fi
+
+if [[ $1 == 'b' ]]; then
+    cd /home/$USER/pkuphy
+    export FLASK_ENV=production
+    export UWSGI_NAME=pkuphy
+elif [[ $1 == 'd' ]]; then
+    cd /home/$USER/devphy
+    export FLASK_ENV=development
+    export UWSGI_NAME=devphy
+    export UWSGI_DEV=1
+fi
+
+if [[ $1 == 'b' ]] || [[ $1 == 'd' ]]; then
+    export VIRTUAL_ENV="$(poetry env info -p)/"
+    if [[ $2 == 'u' ]]; then
+        echo 'Pulling Git repo, may take some time...'
+        git pull
+        poetry install --no-root --no-dev -E uwsgi -E ws
+        reload_uwsgi
+    elif [[ $2 == 'r' ]]; then
+        reload_uwsgi
+    elif [[ $2 == 's' ]]; then
+        if uwsgi_running; then
+            poetry run uwsgi --stop "$HOME/.pids/$UWSGI_NAME.pid"
+            echo 'Stopped uWSGI.'
+        else
+            echo 'Not running.'
+        fi
+    elif [[ $2 == 'f' ]]; then
+        poetry run flask "${@:3}"
+    elif [[ $2 == '?' ]]; then
+        if uwsgi_running; then
+            echo 'Running'
+        else
+            echo 'Not Running'
+        fi
+    else
+        noc_help
+    fi
+elif [[ $1 == 'f' ]]; then
+    if [[ $2 == 'u' ]]; then
+        cd /home/$USER/frontend
+        echo 'Pulling Git repo, may take some time...'
+        git pull
+        npm ci
+        # 如果在 subpath，则需 PUB_PATH=/physu/
+        npm run build
+        rm -rf /home/$USER/html/vue
+        cp -r dist /home/$USER/html/vue
+    else
+        noc_help
+    fi
+else
+    noc_help
+fi
