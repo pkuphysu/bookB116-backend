@@ -1,30 +1,5 @@
 # 北京大学物院 B116 讨论室预约系统
 
-- [如何部署](#如何部署)
-  - [安装 poetry 并安装项目依赖](#安装-poetry-并安装项目依赖)
-    - [Windows with Python default to 3.6+](#windows-with-python-default-to-36)
-    - [Recent Linux with `python-is-python3` available](#recent-linux-with-python-is-python3-available)
-    - [Linux or mac with python default to 2.7](#linux-or-mac-with-python-default-to-27)
-    - [不推荐方法（全平台）](#不推荐方法全平台)
-  - [安装项目依赖](#安装项目依赖)
-  - [安装数据库](#安装数据库)
-    - [准备数据库](#准备数据库)
-  - [设置部分](#设置部分)
-    - [SECRET_KEY](#secret_key)
-    - [FERNET_KEY](#fernet_key)
-  - [本地测试](#本地测试)
-  - [服务器其他服务部分](#服务器其他服务部分)
-    - [前端](#前端)
-    - [导入学生数据](#导入学生数据)
-    - [定时任务](#定时任务)
-    - [运行 uWSGI](#运行-uwsgi)
-    - [Nginx](#nginx)
-- [数据库管理和迁移](#数据库管理和迁移)
-    - [初始化数据库](#初始化数据库)
-    - [改变数据库结构？](#改变数据库结构)
-    - [删除数据库表内容](#删除数据库表内容)
-    - [推倒重来](#推倒重来)
-
 ## 如何部署
 
 ### 安装 [poetry](https://github.com/python-poetry/poetry) 并安装项目依赖
@@ -264,3 +239,17 @@ database delete TableA
 database drop-all
 database init
 ```
+
+## 取坏了的名字
+
+#### `booking`
+
+表示预约。众所周知，book 作为动词有预约的意思。为了和“书”做区分，**特地**加上ing
+
+#### `SBLink`
+
+不是SB！（jiu shi）它的全名是`Student-BookRec-Link-Table`
+
+#### `vercode`
+
+`Verification Code`，它居然看起来是一个单词
