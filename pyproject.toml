@@ -28,7 +28,7 @@ Flask-Migrate = "^2.7.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.3"
-flake8 = "^3.8.4"
+flake8 = "^3.9.1"
 coverage = "^5.5"
 autopep8 = "^1.5.7"
 taskipy = "^1.7.0"
