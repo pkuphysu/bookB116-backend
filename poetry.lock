@@ -745,7 +745,7 @@ reference = "default"
 
 [[package]]
 name = "taskipy"
-version = "1.6.0"
+version = "1.7.0"
 description = "tasks runner for python projects"
 category = "dev"
 optional = false
@@ -862,7 +862,7 @@ ws = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.1"
-content-hash = "c0fdfbf448f593d852aadd60f90faf258ef4646ba3f5b32b26a6cf40fbccf564"
+content-hash = "9b1b167a060a9b24693c3d851e76479be6ff44a025c664d0c1726503b1fad1dc"
 
 [metadata.files]
 alembic = [
@@ -1387,8 +1387,8 @@ sqlalchemy = [
     {file = "SQLAlchemy-1.4.1.tar.gz", hash = "sha256:a6afdab2d70ef9f9905eba5ba93cf78ed9ed188cde3abda3231cdb8fce005a84"},
 ]
 taskipy = [
-    {file = "taskipy-1.6.0-py3-none-any.whl", hash = "sha256:33ee1d52b378cb4af3678fc459b75c3028f594c5e8e42ac0696cbe3e95d47394"},
-    {file = "taskipy-1.6.0.tar.gz", hash = "sha256:ec4d1f2208ae24218950e3a2812e4e8b4397b1f65a6ad7e2b1240b702042fa3e"},
+    {file = "taskipy-1.7.0-py3-none-any.whl", hash = "sha256:9e284c10898e9dee01a3e72220b94b192b1daa0f560271503a6df1da53d03844"},
+    {file = "taskipy-1.7.0.tar.gz", hash = "sha256:960e480b1004971e76454ecd1a0484e640744a30073a1069894a311467f85ed8"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},

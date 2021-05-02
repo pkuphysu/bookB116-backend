@@ -31,7 +31,7 @@ pytest = "^6.2.3"
 flake8 = "^3.8.4"
 coverage = "^5.5"
 autopep8 = "^1.5.5"
-taskipy = "^1.6.0"
+taskipy = "^1.7.0"
 
 [tool.poetry.extras]
 uwsgi = ["uWSGI"]
