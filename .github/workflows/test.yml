@@ -38,23 +38,12 @@ jobs:
           sudo service mysql start
           mysql --version
           mysql -u root -proot -h localhost -e "CREATE DATABASE test_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-      - name: Install Poetry
-        run: pip install poetry
-      - name: Get poetry cache dir
-        id: poetry-cache
-        run: |
-          echo "::set-output name=dir::$(poetry config cache-dir)"
-      - name: Cache Poetry
-        uses: actions/cache@v2.1.4
-        id: cache
+      - uses: Gr1N/setup-poetry@v4
         with:
-          path: ${{ steps.poetry-cache.outputs.dir }}
-          key: poetry-cache-v1-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            poetry-cache-v1-
-      - name: Install Requirements
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: poetry install --no-root
+          poetry-version: 1.1.6
+      - uses: allanchain/poetry-cache-action@release
+        with:
+          replace-mirror: pypi.tuna.tsinghua.edu.cn/pypi.org
       - name: Run Tests
         id: test
         run: poetry run task test-cov
