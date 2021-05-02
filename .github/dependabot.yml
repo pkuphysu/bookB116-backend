@@ -15,7 +15,7 @@ updates:
       - "pkuphysu/backender"
     labels:
       - dependencies
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 0
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -26,3 +26,4 @@ updates:
       - "pkuphysu/backender"
     labels:
       - dependencies
+    open-pull-requests-limit: 0
