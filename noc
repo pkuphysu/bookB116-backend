@@ -83,6 +83,7 @@ elif [[ $1 == 'f' ]]; then
         cd /root/project/bookB116-frontend
         echo 'Pulling Git repo, may take some time...'
         git pull
+        export VUE_APP_API_ROOT="https://bookb116.phy.pku.edu.cn/"
         npm ci
         # 如果在 subpath，则需 PUB_PATH=/physu/
         npm run build
