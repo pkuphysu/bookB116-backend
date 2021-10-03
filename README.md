@@ -148,15 +148,22 @@ poetry run flask student build student_data1.csv data2.csv
 
 ```sh
 export FLASK_ENV=production
-export UWSGI_NAME=devphy  # pid, log, sock 的名字
+export UWSGI_NAME=b116  # pid, log, sock 的名字
 export UWSGI_DEV=1
 # 启动
 poetry run uwsgi --ini uwsgi.ini
 # 重启
-poetry run uwsgi --reload "$HOME/.pids/$UWSGI_NAME.pid"
+poetry run uwsgi --reload "/tmp/$UWSGI_NAME.pid"
 # 关闭
-poetry run uwsgi --stop "$HOME/.pids/$UWSGI_NAME.pid"
+poetry run uwsgi --stop "/tmp/$UWSGI_NAME.pid"
 ```
+
+后台运行应改为 
+```sh
+poetry run uwsgi -d --ini uwsgi.ini
+```
+
+.pid文件地址见uwsgi.ini
 
 #### Nginx
 

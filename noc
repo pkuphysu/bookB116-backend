@@ -9,25 +9,28 @@ b s: backend stop
 b f: backend flask <command>
 b ?: backend running?
 f u: frontend update
-d u: dev backend update
-d r: dev backend reload
-d s: dev backend stop
-d f: dev backend flask <command>
-d ?: dev backend running?
+# d u: dev backend update
+# d r: dev backend reload
+# d s: dev backend stop
+# d f: dev backend flask <command>
+# d ?: dev backend running?
+# dev backend is not availble now
 HELP
 exit
 }
 
 uwsgi_running() {
-    ps -p $(cat "$HOME/.pids/$UWSGI_NAME.pid") > /dev/null 2>&1
+    ps -p $(cat "/tmp/$UWSGI_NAME.pid") > /dev/null 2>&1
+    # 这里的> /dev/null 2>&1是重定向（来自菜鸡的注释）
+    # see: https://www.runoob.com/linux/linux-shell-io-redirections.html
 }
 
 reload_uwsgi() {
     if uwsgi_running; then
         echo 'Reloading uWSGI.'
-        poetry run uwsgi --reload "$HOME/.pids/$UWSGI_NAME.pid"
+        poetry run uwsgi --reload "/tmp/$UWSGI_NAME.pid"
     else
-        poetry run uwsgi --ini uwsgi.ini
+        poetry run uwsgi -d --ini uwsgi.ini
     fi
 }
 
@@ -36,20 +39,22 @@ if [[ $# -lt 2 ]]; then
 fi
 
 if [[ $1 == 'b' ]]; then
-    cd /home/$USER/pkuphy
+    cd /root/project/bookB116-backend
     export FLASK_ENV=production
-    export UWSGI_NAME=pkuphy
+    export UWSGI_NAME=b116
 elif [[ $1 == 'd' ]]; then
-    cd /home/$USER/devphy
-    export FLASK_ENV=development
-    export UWSGI_NAME=devphy
-    export UWSGI_DEV=1
+    noc_help
+    # cd /home/$USER/devphy
+    # export FLASK_ENV=development
+    # export UWSGI_NAME=devphy
+    # export UWSGI_DEV=1
 fi
 
 if [[ $1 == 'b' ]] || [[ $1 == 'd' ]]; then
     export VIRTUAL_ENV="$(poetry env info -p)/"
     if [[ $2 == 'u' ]]; then
         echo 'Pulling Git repo, may take some time...'
+        cd /root/project/bookB116-backend
         git pull
         poetry install --no-root --no-dev -E uwsgi -E ws
         reload_uwsgi
@@ -57,7 +62,7 @@ if [[ $1 == 'b' ]] || [[ $1 == 'd' ]]; then
         reload_uwsgi
     elif [[ $2 == 's' ]]; then
         if uwsgi_running; then
-            poetry run uwsgi --stop "$HOME/.pids/$UWSGI_NAME.pid"
+            poetry run uwsgi --stop "/tmp/$UWSGI_NAME.pid"
             echo 'Stopped uWSGI.'
         else
             echo 'Not running.'
@@ -75,14 +80,15 @@ if [[ $1 == 'b' ]] || [[ $1 == 'd' ]]; then
     fi
 elif [[ $1 == 'f' ]]; then
     if [[ $2 == 'u' ]]; then
-        cd /home/$USER/frontend
+        cd /root/project/bookB116-frontend
         echo 'Pulling Git repo, may take some time...'
         git pull
         npm ci
         # 如果在 subpath，则需 PUB_PATH=/physu/
         npm run build
-        rm -rf /home/$USER/html/vue
-        cp -r dist /home/$USER/html/vue
+        # rm -rf /home/$USER/html/vue
+        # cp -r dist /home/$USER/html/vue
+        # 不明白意义
     else
         noc_help
     fi
