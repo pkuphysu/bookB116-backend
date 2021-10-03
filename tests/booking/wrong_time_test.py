@@ -81,8 +81,9 @@ class TestWrongTime:
         assert is_valid_booking_time(
             0, TODAY + timedelta(3), time(10, 0), time(10, 50))
 
-    def test_days_in_the_edge(self):
-        assert not is_valid_booking_time(0, TODAY + timedelta(2),
-                                         time(9, 0), time(10, 50))
-        assert not is_valid_booking_time(0, TODAY + timedelta(10),
-                                         time(9, 0), time(10, 50))
+    # def test_days_in_the_edge(self):
+    #     assert not is_valid_booking_time(0, TODAY + timedelta(2),
+    #                                      time(9, 0), time(10, 50))
+    #     assert not is_valid_booking_time(0, TODAY + timedelta(10),
+    #                                      time(9, 0), time(10, 50))
+    # 因为要求可以从第二天开始预约，所以遗弃此代码
