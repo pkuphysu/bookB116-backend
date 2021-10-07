@@ -58,3 +58,12 @@ LOGGING:
       level: DEBUG
       stream: ext://flask.logging.wsgi_errors_stream
       formatter: default
+OPENIDAUTH:
+  ISSUER: https://auth.phy.pku.edu.cn/oidc
+  AUTHORIZATION_ENDPOINT: https://auth.phy.pku.edu.cn/oidc/authorize
+  TOKEN_ENDPOINT: https://auth.phy.pku.edu.cn/oidc/token
+  USERINFO_ENDPOINT: https://auth.phy.pku.edu.cn/oidc/userinfo
+  END_SESSION_ENDPOINT: https://auth.phy.pku.edu.cn/oidc/end-session
+  INTROSPECTION_ENDPOINT: https://auth.phy.pku.edu.cn/oidc/introspect
+  JWKS_URI: https://auth.phy.pku.edu.cn/oidc/jwks
+  SCOPE: 'openid pku'

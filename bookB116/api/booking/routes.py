@@ -24,6 +24,7 @@ def my_status():
     logger.info('Booking Home visited')
     records = []
     for r in BookRec.get_stu_booking(current_user.stu_id):
+        print(current_user.stu_id)
         start_datetime = datetime.datetime.combine(r.date, r.start_time)
         end_datetime = datetime.datetime.combine(r.date, r.end_time)
         records.append({

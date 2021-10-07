@@ -48,3 +48,11 @@ class Student(db.Model):
     @classmethod
     def by_raw_id(cls, raw_student_id: str):
         return cls.query.get(cryptor.hashit(raw_student_id))
+
+    @classmethod
+    def add_raw_id(cls, raw_student_id: str):
+        inserter = Student.__table__.insert().prefix_with('IGNORE')
+        db.session.execute(inserter.values(
+            stu_id=cryptor.hashit(raw_student_id)))
+        db.session.commit()
+        return cls.by_raw_id(raw_student_id)

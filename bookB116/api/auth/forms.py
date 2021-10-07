@@ -7,5 +7,5 @@ class LoginForm(AbortForm):
     vercode = StringField(validators=[Vercode()])
 
 
-class VercodeForm(AbortForm):
+class AuthForm(AbortForm):
     stu_id = StringField(validators=[RequireStu()])
