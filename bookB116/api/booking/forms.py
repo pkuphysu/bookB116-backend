@@ -33,7 +33,7 @@ class BookForm(AbortForm):
         Length(min=11, max=11, message='Not a phone number')
     ])
     stu_num = IntegerField(validators=[
-        NumberRange(min=3, message='Students too few')
+        NumberRange(min=3, max=50, message='Number of students invalid')
     ])
     description = StringField(validators=[
         DataRequired(),

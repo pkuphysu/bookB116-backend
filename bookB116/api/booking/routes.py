@@ -24,7 +24,6 @@ def my_status():
     logger.info('Booking Home visited')
     records = []
     for r in BookRec.get_stu_booking(current_user.stu_id):
-        print(current_user.stu_id)
         start_datetime = datetime.datetime.combine(r.date, r.start_time)
         end_datetime = datetime.datetime.combine(r.date, r.end_time)
         records.append({
@@ -75,7 +74,7 @@ def book():
         # is_valid_booking_time shall handle logging stuff
         abort(400, 'Invalid Time')
     if checking:
-        return jsonify(message='Booking Ready')
+        return jsonify(message='Vercode needed')
 
     book_id = BookRec.commit_booking(
         zip(students, raw_ids), room_id, date, start, end,

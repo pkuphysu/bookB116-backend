@@ -1,12 +1,15 @@
 from urllib.parse import urljoin, urlparse
 from logging import getLogger
+import requests
+from bookB116.settings import CONFIG
 
 from flask import request, session, abort, flash
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, ValidationError, StopValidation
+from oic.oic.message import AuthorizationResponse
 
 from bookB116.database import Student
-from bookB116 import cryptor
+from bookB116 import cryptor, client
 
 
 logger = getLogger(__name__)
@@ -91,6 +94,50 @@ class RequireStu(DataRequired):
             if Student.by_raw_id(raw_stu_id):
                 return True
         raise ValidationError('User Not Found')
+
+
+class AuthStu(DataRequired):
+    def __call__(self, form, field):
+        super().__call__(form, field)
+        query_string = str(field.data)
+        aresp = client.parse_response(AuthorizationResponse, info=query_string,
+                                      sformat="urlencoded")
+        state = aresp["state"]
+        sessionState = session.pop('state', None)
+        sessionNonce = session.pop('nonce', None)
+        if sessionState == None:
+            logger.info('Invalid auth without login /auth')
+            raise ValidationError('Login First')
+        if state != sessionState:
+            logger.info(f'Invalid state \nstate in session:{sessionState}\n\
+                state in request:{state}/auth')
+            raise ValidationError('Auth Fail')
+        try:
+            resp = client.do_access_token_request(state=aresp["state"],
+                                                  request_args={
+                                                      "code": aresp["code"]},
+                                                  authn_method="client_secret_basic")
+            assert resp['id_token']['nonce'] == sessionNonce, 'Invalid nonce'
+            access_token = resp['access_token']
+            res = requests.get(CONFIG.OPENIDAUTH.USERINFO_ENDPOINT,
+                               headers={"Authorization": f"Bearer {access_token}"})  # 不知道为什么，用oic的userinfo就请求不来。。。
+            if res.status_code != 200:
+                if res.status_code == 401:
+                    logger.info('Unauthorized /auth/UserInfo')
+                    raise ValidationError('Auth Fail')
+                else:
+                    raise ValidationError(
+                        f'UnknownError:res.status_code={res.status_code} /auth/UserInfo')
+            raw_stu_id = res.json()['pku_id']
+            assert raw_stu_id is not None
+        except Exception as e:
+            logger.info('ERROR:'+repr(e)+' /auth')
+            raise ValidationError('Network Error')
+        user = Student.by_raw_id(raw_stu_id)
+        if user == None:
+            user = Student.add_raw_id(raw_stu_id)
+        session['raw_stu_id'] = raw_stu_id
+        return True
 
 
 class Vercode(object):

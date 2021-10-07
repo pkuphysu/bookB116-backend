@@ -118,7 +118,7 @@ class BookRec(db.Model):
         for booking in cls.get_booking_between(
                 CONFIG.API.BOOKING.DAY_NEAREST,
                 CONFIG.API.BOOKING.DAY_FARTHEST
-                ):
+        ):
             datedelta = (booking.date - today).days
             # Parse time on the server side
             # Need better implementation according to future demand
@@ -193,7 +193,7 @@ class BookRec(db.Model):
             today+datetime.timedelta(CONFIG.API.BOOKING.DAY_NEAREST),
             today+datetime.timedelta(CONFIG.API.BOOKING.DAY_FARTHEST + 1))
         ).count()
-        print(stu_id, count)
+        # print(stu_id, count)
         return count
 
     @classmethod
