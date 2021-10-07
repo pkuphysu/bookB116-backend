@@ -28,7 +28,7 @@ def get_pkuid_from_auth(query_string: str):
     state = aresp["state"]
     sessionState = session.pop('state', None)
     sessionNonce = session.pop('nonce', None)
-    if sessionState == None:
+    if sessionState is None:
         logger.info('Invalid auth without login /auth')
         raise ValidationError('Login First')
     if state != sessionState:
@@ -43,14 +43,16 @@ def get_pkuid_from_auth(query_string: str):
         assert resp['id_token']['nonce'] == sessionNonce, 'Invalid nonce'
         access_token = resp['access_token']
         res = requests.get(CONFIG.OPENIDAUTH.USERINFO_ENDPOINT,
-                           headers={"Authorization": f"Bearer {access_token}"})  # 不知道为什么，用oic的userinfo就请求不来。。。
+                           headers={"Authorization": f"Bearer {access_token}"})
+        # 不知道为什么，用oic的userinfo就请求不来。。。
         if res.status_code != 200:
             if res.status_code == 401:
                 logger.info('Unauthorized /auth/UserInfo')
                 raise ValidationError('Auth Fail')
             else:
                 raise ValidationError(
-                    f'UnknownError:res.status_code={res.status_code} /auth/UserInfo')
+                    f'UnknownError:res.status_code={res.status_code} \
+                        /auth/UserInfo')
         raw_stu_id = res.json()['pku_id']
         assert raw_stu_id is not None
     except Exception as e:
@@ -142,7 +144,7 @@ class AuthStu(DataRequired):
         else:
             raw_stu_id = get_pkuid_from_auth(query_string)
         user = Student.by_raw_id(raw_stu_id)
-        if user == None:
+        if user is None:
             user = Student.add_raw_id(raw_stu_id)
         session['raw_stu_id'] = raw_stu_id
         return True

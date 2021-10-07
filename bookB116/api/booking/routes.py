@@ -9,7 +9,7 @@ from bookB116.settings import CONFIG
 
 from . import bp
 from .database import BookRec
-from .forms import BookForm, ConfirmForm, CancelForm
+from .forms import BookForm, CancelForm
 
 logger = getLogger(__name__)
 BOOKING = CONFIG.API.BOOKING
