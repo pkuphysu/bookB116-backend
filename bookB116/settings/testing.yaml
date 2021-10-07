@@ -15,3 +15,8 @@ LOGGING:
       level: DEBUG
       filename: .test-log
       formatter: default
+OPENIDAUTH:
+  CLIENT_ID: "16333223530770"
+  CLIENT_SECRET: "8328a419a85ae0448212f24d006fd96b46f0dae81b49b9525a68026e"
+  REDIRECT_URIS:
+    - http://localhost:8080/auth/

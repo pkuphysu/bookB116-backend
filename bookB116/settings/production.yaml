@@ -24,3 +24,8 @@ LOGGING:
       when: MIDNIGHT
       backupCount: 60
       formatter: default
+OPENIDAUTH:
+  CLIENT_ID: "16333186470640"
+  CLIENT_SECRET: "bbbc32cd2fa356b650203e2f8586b8d8ffa0f3971742494d93a132a6"
+  REDIRECT_URIS:
+    - https://bookb116.phy.pku.edu.cn/auth/
