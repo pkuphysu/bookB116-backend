@@ -60,8 +60,8 @@ def login():
     return a login_url to redirect
 
     state is used to keep track of responses to outstanding requests (state).
-    nonce is a string value used to associate a Client session with an ID Token,
-    and to mitigate replay attacks.
+    nonce is a string value used to associate a Client session 
+    with an ID Token, and to mitigate replay attacks.
     '''
     session["state"] = rndstr()
     session["nonce"] = rndstr()
