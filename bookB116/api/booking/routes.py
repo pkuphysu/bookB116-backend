@@ -100,18 +100,19 @@ def cancel():
     return jsonify(message='Successfully Canceled')
 
 
-@bp.route('/api/booking/confirm', methods=['POST'])
-@login_required
-def confirm():
-    book_rec = ConfirmForm().validate()
-    if is_valid_booking_time(book_rec.room_id, book_rec.date,
-                             book_rec.start_time, book_rec.end_time):
-        BookRec.stu_confirm(current_user.stu_id, book_rec.book_id)
-        book_rec.update_confirm()
-        logger.info('Confirimed book %s', book_rec.book_id)
-        return jsonify(message='Successfully Confirmed')
-    # 409 Conflict
-    abort(409, 'Hand Too Slow')
+# @bp.route('/api/booking/confirm', methods=['POST'])
+# @login_required
+# def confirm():
+#     book_rec = ConfirmForm().validate()
+#     if is_valid_booking_time(book_rec.room_id, book_rec.date,
+#                              book_rec.start_time, book_rec.end_time):
+#         BookRec.stu_confirm(current_user.stu_id, book_rec.book_id)
+#         book_rec.update_confirm()
+#         logger.info('Confirmed book %s', book_rec.book_id)
+#         return jsonify(message='Successfully Confirmed')
+#     # 409 Conflict
+#     abort(409, 'Hand Too Slow')
+# confirm 功能已被取消
 
 
 def is_valid_booking_time(room_id, date, start, end):

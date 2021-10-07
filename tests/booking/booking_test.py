@@ -14,13 +14,13 @@ END = int((TODAY+timedelta(5, hours=10, minutes=50)).timestamp())
 
 def test_book_db(client_book):
     # assert len(BookRec.get_booking_info()[3]) == 3
-    his_book_info = BookRec.get_stu_booking(STU_IDS[2])
-    assert len(his_book_info) == 2
+    his_book_info = BookRec.get_stu_booking(STU_IDS[0])
+    assert len(his_book_info) == 1
     book_to_cancel = his_book_info[0]
     book_to_cancel.cancel()
     assert book_to_cancel.canceled
     # assert len(BookRec.get_booking_info()[3]) == 2
-    assert len(BookRec.get_stu_all_booking(STU_IDS[2])) == 3
+    assert len(BookRec.get_stu_all_booking(STU_IDS[0])) == 1
 
 
 @pytest.mark.usefixtures('client_book')
@@ -50,23 +50,25 @@ class TestInvalidBook(BookingClient):
         assert b'Invitee Exceed' in rv.data
 
     def test_sponsor_exceed(self):
-        rv = self.book((RAW_STU_IDS[4], RAW_STU_IDS[0]), user_index=2)
+        rv = self.book((RAW_STU_IDS[4], RAW_STU_IDS[0]), user_index=0)
+        rv = self.book((RAW_STU_IDS[4], RAW_STU_IDS[0]), user_index=0)
+        rv = self.book((RAW_STU_IDS[4], RAW_STU_IDS[0]), user_index=0)
         assert rv.status_code == 409
         assert b'Sponsor Exceed' in rv.data
 
-    def test_book_vercode_invalid(self):
-        _, rv = self.get_twice_vercode(user_index=7)
-        assert rv.status_code == 200
-        rv = self.login_post('/api/booking/book', json={
-            'start': 1234567890,
-            'end': 1234567890,
-            'room_id': 1,
-            'stu1': 1234567,
-            'stu2': 1234567,
-            'vercode': 'sdfg'
-        }, user_index=7)
-        assert rv.status_code == 400
-        assert b'Code Error' in rv.data
+    # def test_book_vercode_invalid(self):
+    #     _, rv = self.get_vercode(user_index=7)
+    #     assert rv.status_code == 200
+    #     rv = self.login_post('/api/booking/book', json={
+    #         'start': 1234567890,
+    #         'end': 1234567890,
+    #         'room_id': 1,
+    #         'stu1': 1234567,
+    #         'stu2': 1234567,
+    #         'vercode': 'sdfg'
+    #     }, user_index=0)
+    #     assert rv.status_code == 400
+    #     assert b'Code Error' in rv.data
 
 
 @pytest.mark.usefixtures('client_book')
@@ -75,17 +77,17 @@ class TestInvalidCancel(BookingClient):
         assert self.cancel(129078543).status_code == 404
 
     def test_others(self):
-        assert self.cancel(BOOK_IDS[0]).status_code == 404
+        assert self.cancel(BOOK_IDS[0]).status_code == 403
 
     def test_no_previlege(self):
-        assert self.cancel(BOOK_IDS[3]).status_code == 403
+        assert self.cancel(BOOK_IDS[3]).status_code == 404
 
-    def test_canceled(self):
-        assert self.cancel(BOOK_IDS[1]).status_code == 200
-        assert self.cancel(BOOK_IDS[1]).status_code == 403
+    # def test_canceled(self):
+    #     assert self.cancel(BOOK_IDS[1]).status_code == 200
+    #     assert self.cancel(BOOK_IDS[1]).status_code == 403
 
     def test_expired(self):
-        assert self.cancel(BOOK_IDS[2]).status_code == 403
+        assert self.cancel(BOOK_IDS[2]).status_code == 404
 
 
 '''

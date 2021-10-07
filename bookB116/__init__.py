@@ -34,6 +34,7 @@ info = {
     "scope": CONFIG.OPENIDAUTH.SCOPE
 }
 client_reg = RegistrationResponse(**info)
+print(client_reg["client_id"])
 client.handle_provider_config(op_info, op_info['issuer'])
 client.store_registration_info(client_reg)
 

@@ -22,6 +22,43 @@ def is_safe_url(target):
         ref_url.netloc == test_url.netloc
 
 
+def get_pkuid_from_auth(query_string: str):
+    aresp = client.parse_response(AuthorizationResponse, info=query_string,
+                                  sformat="urlencoded")
+    state = aresp["state"]
+    sessionState = session.pop('state', None)
+    sessionNonce = session.pop('nonce', None)
+    if sessionState == None:
+        logger.info('Invalid auth without login /auth')
+        raise ValidationError('Login First')
+    if state != sessionState:
+        logger.info(f'Invalid state \nstate in session:{sessionState}\n\
+            state in request:{state}/auth')
+        raise ValidationError('Auth Fail')
+    try:
+        resp = client.do_access_token_request(state=aresp["state"],
+                                              request_args={
+            "code": aresp["code"]},
+            authn_method="client_secret_basic")
+        assert resp['id_token']['nonce'] == sessionNonce, 'Invalid nonce'
+        access_token = resp['access_token']
+        res = requests.get(CONFIG.OPENIDAUTH.USERINFO_ENDPOINT,
+                           headers={"Authorization": f"Bearer {access_token}"})  # 不知道为什么，用oic的userinfo就请求不来。。。
+        if res.status_code != 200:
+            if res.status_code == 401:
+                logger.info('Unauthorized /auth/UserInfo')
+                raise ValidationError('Auth Fail')
+            else:
+                raise ValidationError(
+                    f'UnknownError:res.status_code={res.status_code} /auth/UserInfo')
+        raw_stu_id = res.json()['pku_id']
+        assert raw_stu_id is not None
+    except Exception as e:
+        logger.info('ERROR:'+repr(e)+' /auth')
+        raise ValidationError('Network Error')
+    return raw_stu_id
+
+
 class AbortForm(FlaskForm):
     '''
     Simple override of the default behaviour
@@ -100,39 +137,10 @@ class AuthStu(DataRequired):
     def __call__(self, form, field):
         super().__call__(form, field)
         query_string = str(field.data)
-        aresp = client.parse_response(AuthorizationResponse, info=query_string,
-                                      sformat="urlencoded")
-        state = aresp["state"]
-        sessionState = session.pop('state', None)
-        sessionNonce = session.pop('nonce', None)
-        if sessionState == None:
-            logger.info('Invalid auth without login /auth')
-            raise ValidationError('Login First')
-        if state != sessionState:
-            logger.info(f'Invalid state \nstate in session:{sessionState}\n\
-                state in request:{state}/auth')
-            raise ValidationError('Auth Fail')
-        try:
-            resp = client.do_access_token_request(state=aresp["state"],
-                                                  request_args={
-                                                      "code": aresp["code"]},
-                                                  authn_method="client_secret_basic")
-            assert resp['id_token']['nonce'] == sessionNonce, 'Invalid nonce'
-            access_token = resp['access_token']
-            res = requests.get(CONFIG.OPENIDAUTH.USERINFO_ENDPOINT,
-                               headers={"Authorization": f"Bearer {access_token}"})  # 不知道为什么，用oic的userinfo就请求不来。。。
-            if res.status_code != 200:
-                if res.status_code == 401:
-                    logger.info('Unauthorized /auth/UserInfo')
-                    raise ValidationError('Auth Fail')
-                else:
-                    raise ValidationError(
-                        f'UnknownError:res.status_code={res.status_code} /auth/UserInfo')
-            raw_stu_id = res.json()['pku_id']
-            assert raw_stu_id is not None
-        except Exception as e:
-            logger.info('ERROR:'+repr(e)+' /auth')
-            raise ValidationError('Network Error')
+        if CONFIG.FLASK.TESTING:
+            raw_stu_id = CONFIG.OPENIDAUTH.TESTING_ID
+        else:
+            raw_stu_id = get_pkuid_from_auth(query_string)
         user = Student.by_raw_id(raw_stu_id)
         if user == None:
             user = Student.add_raw_id(raw_stu_id)

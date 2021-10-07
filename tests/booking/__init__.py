@@ -11,19 +11,20 @@ class BookingClient(Client):
     def cancel(self, book_id, user_index=2):
         return self.login_post('/api/booking/cancel', json={
             'book_id': book_id,
-            'vercode': self.get_twice_vercode(user_index)[0]
+            'vercode': self.get_vercode()[0]
         }, user_index=user_index)
 
-    def book(self, *args, user_index=2, **kargs):
+    def book(self, *args, user_index=0, **kargs):
         return self.login_post('/api/booking/book', user_index=user_index,
                                json=self.correct_book_form(
                                    *args, user_index=user_index, **kargs),
                                raw_required=True)
 
-    def confirm(self, book_id, user_index=2):
-        return self.login_post('/api/booking/confirm',
-                               json={'book_id': book_id},
-                               user_index=user_index)
+    # def confirm(self, book_id, user_index=0):
+    #     return self.login_post('/api/booking/confirm',
+    #                            json={'book_id': book_id},
+    #                            user_index=user_index)
+    #  confirm 功能已被取消
 
     def correct_book_form(self, raw_stu_ids, *, room_id=0, user_index=2,
                           start=START, end=END, test=False):
@@ -31,7 +32,7 @@ class BookingClient(Client):
             vercode = ''
             test = True
         else:
-            vercode = self.get_twice_vercode(user_index)[0]
+            vercode = self.get_vercode(user_index)[0]
             test = False
 
         return {

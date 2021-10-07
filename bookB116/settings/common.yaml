@@ -18,7 +18,7 @@ FLASK:
   SESSION_TYPE: 'sqlalchemy'
 API:
   BOOKING:
-    # Book in 1 to 7 days.
+    # Book in 0 to 9 days.
     # Today is 0 and tomorrow is 1
     DAY_NEAREST: 0
     DAY_FARTHEST: 9
@@ -67,3 +67,7 @@ OPENIDAUTH:
   INTROSPECTION_ENDPOINT: https://auth.phy.pku.edu.cn/oidc/introspect
   JWKS_URI: https://auth.phy.pku.edu.cn/oidc/jwks
   SCOPE: 'openid pku'
+  TESTING_ID: '2000000000'
+  CLIENT_ID: '' # should be in local.yaml
+  CLIENT_SECRET: '' # should be in local.yaml
+  REDIRECT_URIS: [] # should be in local.yaml

@@ -1,14 +1,12 @@
 from logging import getLogger
 from time import time
 import datetime
-import requests
 from bookB116.settings import CONFIG
 
 import flask_login
 from flask import abort, request, session, jsonify
 from flask import current_app as app
 from oic import rndstr
-from oic.oic.message import AuthorizationResponse
 
 from bookB116 import cryptor, login_manager, client
 from bookB116.database import Student
