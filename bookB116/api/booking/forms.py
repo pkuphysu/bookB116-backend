@@ -66,36 +66,36 @@ class BookForm(AbortForm):
                       students, date, start, end)
 
 
-# class ConfirmForm(AbortForm):
-#     book_id = StringField(validators=[DataRequired()])
-#     log_verb = 'confirm'
+class ConfirmForm(AbortForm):
+    book_id = StringField(validators=[DataRequired()])
+    log_verb = 'confirm'
 
-#     def custom_validate(self):
-#         stu_id = current_user.stu_id
-#         book_rec = BookRec.query.get(self.book_id.data)
-#         if book_rec is None:
-#             logger.error('%s a booking where the '
-#                          'booking id %s does not exist',
-#                          self.log_verb, self.book_id.data)
-#             abort(404, 'NO BOOK_ID')
-#         if stu_id not in book_rec.booking_stu():
-#             logger.error('%s a booking where he/she is not '
-#                          'in the booking students list', self.log_verb)
-#             # Should not tell others
-#             abort(404, 'NO BOOK_ID')
-#         delta = book_rec.date - datetime.date.today()
-#         if not (
-#                 datetime.timedelta(CONFIG.API.BOOKING.DAY_NEAREST) <= delta
-#                 <= datetime.timedelta(CONFIG.API.BOOKING.DAY_FARTHEST + 1)
-#         ):
-#             logger.error('%s a booking where [%s]'
-#                          'is not in the available range',
-#                          self.log_verb, delta)
-#             abort(403, 'EXPIRED')
-#         if book_rec.canceled:
-#             logger.error('%s a canceled record', self.log_verb)
-#             abort(403, 'CANCELED')
-#         return True, book_rec
+    def custom_validate(self):
+        stu_id = current_user.stu_id
+        book_rec = BookRec.query.get(self.book_id.data)
+        if book_rec is None:
+            logger.error('%s a booking where the '
+                         'booking id %s does not exist',
+                         self.log_verb, self.book_id.data)
+            abort(404, 'NO BOOK_ID')
+        if stu_id not in book_rec.booking_stu():
+            logger.error('%s a booking where he/she is not '
+                         'in the booking students list', self.log_verb)
+            # Should not tell others
+            abort(404, 'NO BOOK_ID')
+        delta = book_rec.date - datetime.date.today()
+        if not (
+                datetime.timedelta(CONFIG.API.BOOKING.DAY_NEAREST) <= delta
+                <= datetime.timedelta(CONFIG.API.BOOKING.DAY_FARTHEST + 1)
+        ):
+            logger.error('%s a booking where [%s]'
+                         'is not in the available range',
+                         self.log_verb, delta)
+            abort(403, 'EXPIRED')
+        if book_rec.canceled:
+            logger.error('%s a canceled record', self.log_verb)
+            abort(403, 'CANCELED')
+        return True, book_rec
 
 
 class CancelForm(ConfirmForm):
